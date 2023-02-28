@@ -16,7 +16,9 @@ def run(code: bytes) -> None:
         print(f"{pc_b:04x} {instruction.name}")
         print(f"stack, {context.stack.stack}")
         print(f"state, {context.state}")
-    print("Output: ", context.stack.pop())
+        print(f"memory, {context.memory.memory}")
+    print(f"returndata, 0x{context.returndata.hex()}")
+
 
 def main():
     if len(sys.argv) != 2:

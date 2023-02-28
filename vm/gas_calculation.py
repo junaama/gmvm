@@ -4,7 +4,9 @@ class GasCalculation:
         # stuff
 
     def consume_gas(self, gas):
+        # stuff
         
     def return_gas(self, gas):
+        # stuff
 
     

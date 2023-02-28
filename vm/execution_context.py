@@ -12,6 +12,7 @@ class ExecutionContext:
         self.storage = storage
         self.state = {}
         self.stopped = False
+        self.returndata = bytes()
 
     def stop(self):
         self.stopped = True
@@ -20,7 +21,10 @@ class ExecutionContext:
         value = int.from_bytes(self.code[self.pc : self.pc + bytes], "big")
         self.pc += bytes
         return value
-
+    
+    def return_data(self, offset, size):
+        self.stopped = True
+        self.returndata = self.memory.read_range(offset=offset, size=size)
 
 
 

@@ -1,1 +1,6 @@
-class State
+class State:
+
+    def __init__(self):
+        self.state = {}
+
+    

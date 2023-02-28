@@ -25,7 +25,8 @@ def add_instruction(opcode: int, name: str, execute_fn: callable):
 def decode_opcode(context: ExecutionContext):
     if context.pc < 0:
         raise Exception("Program counter is invalid")
-    
+    if context.pc >= len(context.code):
+        return STOP
     opcode = context.read_code(1)
     instruction = INSTRUCTIONS_BY_OPCODE.get(opcode)
     if instruction is None:
@@ -62,3 +63,15 @@ DAMAGE = add_instruction(DAMAGE, "DAMAGE", lambda ctx: ctx.state.update({"damage
 DEFENSE = add_instruction(DEFENSE, "DEFENSE", lambda ctx: ctx.state.update({"defense": ctx.stack.pop()}))
 SPEEDBOOST = add_instruction(SPEEDBOOST, "SPEEDBOOST", lambda ctx: ctx.state.update({"speedboost": ctx.stack.pop()}))
 
+def mstore8(ctx):
+    offset = ctx.stack.pop()
+    value = bytes(ctx.stack.pop())
+
+    padded_value = value.rjust(1, b'\x00')
+    normalized_value = padded_value[-1:]
+    ctx.memory.extend(offset, 1)
+    ctx.memory.write(offset, 1, normalized_value)
+
+MSTORE8 = add_instruction(MSTORE8, "MSTORE8", mstore8)
+
+RETURN = add_instruction(RETURN, "RETURN", lambda ctx: ctx.return_data(ctx.stack.pop(), ctx.stack.pop()))
