@@ -51,3 +51,14 @@ DIV = add_instruction(DIV, "DIV", div)
 LT = add_instruction(LT, "LT", lambda ctx: ctx.stack.push(1 if ctx.stack.pop() < ctx.stack.pop() else 0))
 GT = add_instruction(GT, "GT", lambda ctx: ctx.stack.push(1 if ctx.stack.pop() > ctx.stack.pop() else 0))
 EQ = add_instruction(EQ, "EQ", lambda ctx: ctx.stack.push(1 if ctx.stack.pop() == ctx.stack.pop() else 0))
+
+PUSH1 = add_instruction(PUSH1, "PUSH1", lambda ctx: ctx.stack.push(ctx.read_code(1)))
+PUSH2 = add_instruction(PUSH2, "PUSH2", lambda ctx: ctx.stack.push(ctx.read_code(2)))
+
+POP = add_instruction(POP, "POP", lambda ctx: ctx.stack.pop())
+STOP = add_instruction(STOP, "STOP", lambda ctx: ctx.stop())
+
+DAMAGE = add_instruction(DAMAGE, "DAMAGE", lambda ctx: ctx.state.update({"damage": ctx.read_code(1)}))
+DEFENSE = add_instruction(DEFENSE, "DEFENSE", lambda ctx: ctx.state.update({"defense": ctx.stack.pop()}))
+SPEEDBOOST = add_instruction(SPEEDBOOST, "SPEEDBOOST", lambda ctx: ctx.state.update({"speedboost": ctx.stack.pop()}))
+

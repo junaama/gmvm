@@ -10,6 +10,7 @@ class ExecutionContext:
         self.stack = stack
         self.memory = memory
         self.storage = storage
+        self.state = {}
         self.stopped = False
 
     def stop(self):

@@ -1,6 +1,6 @@
 class Stack:
     
-    def __init__(self, max_depth=1024):
+    def __init__(self, max_depth=1024) -> None:
         self.stack = []
         self.max_depth = max_depth
 
