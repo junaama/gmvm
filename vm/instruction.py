@@ -33,6 +33,9 @@ def decode_opcode(context: ExecutionContext):
         raise Exception(f"Invalid opcode: {opcode}")
     return instruction
 
+def is_valid_opcode(opcode: int) -> bool:
+    return opcode in INSTRUCTIONS_BY_OPCODE
+
 # from opcodes in opcode_values call add_instruction for each
 
 ADD = add_instruction(ADD, "ADD", lambda ctx: ctx.stack.push((ctx.stack.pop() + ctx.stack.pop()) & MAX_UINT256))
@@ -75,3 +78,57 @@ def mstore8(ctx):
 MSTORE8 = add_instruction(MSTORE8, "MSTORE8", mstore8)
 
 RETURN = add_instruction(RETURN, "RETURN", lambda ctx: ctx.return_data(ctx.stack.pop(), ctx.stack.pop()))
+
+def jump(ctx) -> None:
+    jdest = ctx.stack.pop()
+    ctx.pc = jdest
+    nextdest = ctx.peek_code()
+
+    if nextdest != 91:
+        raise Exception("Invalid jump destination", nextdest,)
+    if not is_valid_opcode(jdest):
+        raise Exception("Invalid jump instruction", jdest)
+    
+JUMP = add_instruction(JUMP, "JUMP", jump)
+
+def jumpi(ctx) -> None:
+    jdest = ctx.stack.pop()
+    val = ctx.stack.pop()
+    if val:
+        ctx.pc = jdest
+        nextdest = ctx.peek_code()
+        if nextdest != 91:
+            raise Exception("Invalid jump destination")
+        if not is_valid_opcode(jdest):
+            raise Exception("Invalid jump instruction")
+
+JUMPI = add_instruction(JUMPI, "JUMPI", jumpi)
+
+def jumpdest(ctx) -> None:
+    pass
+
+JUMPDEST = add_instruction(JUMPDEST, "JUMPDEST", jumpdest)
+
+def pc(ctx): 
+    max_pc = max(ctx.pc - 1, 0)
+    ctx.stack.push(max_pc)
+
+PC = add_instruction(PC, "PC", pc)
+
+DUP1 = add_instruction(DUP1, "DUP1", lambda ctx: ctx.stack.dup(1))
+DUP2 = add_instruction(DUP2, "DUP2", lambda ctx: ctx.stack.dup(2))
+DUP3 = add_instruction(DUP3, "DUP3", lambda ctx: ctx.stack.dup(3))
+DUP4 = add_instruction(DUP4, "DUP4", lambda ctx: ctx.stack.dup(4))
+DUP5 = add_instruction(DUP5, "DUP5", lambda ctx: ctx.stack.dup(5))
+DUP6 = add_instruction(DUP6, "DUP6", lambda ctx: ctx.stack.dup(6))
+DUP7 = add_instruction(DUP7, "DUP7", lambda ctx: ctx.stack.dup(7))
+DUP8 = add_instruction(DUP8, "DUP8", lambda ctx: ctx.stack.dup(8))
+
+SWAP1 = add_instruction(SWAP1, "SWAP1", lambda ctx: ctx.stack.swap(1))
+SWAP2 = add_instruction(SWAP2, "SWAP2", lambda ctx: ctx.stack.swap(2))
+SWAP3 = add_instruction(SWAP3, "SWAP3", lambda ctx: ctx.stack.swap(3))
+SWAP4 = add_instruction(SWAP4, "SWAP4", lambda ctx: ctx.stack.swap(4))
+SWAP5 = add_instruction(SWAP5, "SWAP5", lambda ctx: ctx.stack.swap(5))
+SWAP6 = add_instruction(SWAP6, "SWAP6", lambda ctx: ctx.stack.swap(6))
+SWAP7 = add_instruction(SWAP7, "SWAP7", lambda ctx: ctx.stack.swap(7))
+SWAP8 = add_instruction(SWAP8, "SWAP8", lambda ctx: ctx.stack.swap(8))

@@ -31,6 +31,21 @@ class Stack:
         else:
             raise Exception("Invalid type")
 
+    def peek(self):
+        if len(self.stack) == 0:
+            raise Exception("Stack underflow")
+        return self.stack[-1]
+
+    def swap(self, offset):
+        idx = -1 * offset - 1
+        self.stack[-1], self.stack[idx] = self.stack[idx], self.stack[-1]
+
+    def dup(self, offset):
+        if len(self.stack) > 1023:
+            raise Exception("Stack overflow")
+        idx = -1 * offset
+        self.stack.append(self.stack[idx])
+
 def int_to_big_endian(value) -> bytes:
     return value.to_bytes((value.bit_length() + 7) // 8, 'big')
 
