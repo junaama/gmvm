@@ -13,6 +13,13 @@ class Stack:
         if len(self.stack) >= self.max_depth:
             raise Exception("Stack overflow")
         self.stack.append(item)
+    
+    def push_bytes(self, item):
+        if len(self.stack) > 1023:
+            raise Exception("Stack overflow")
+        if len(item) > 32:
+            raise Exception("Invalid item size")
+        self.stack.append((bytes, item))
 
     def pop(self):
         if len(self.stack) == 0:

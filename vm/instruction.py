@@ -1,6 +1,7 @@
 from execution_context import ExecutionContext
 from opcode_values import *
 from constants import MAX_UINT256
+from vm.memory import _ceil32
 
 class Instruction:
 
@@ -36,6 +37,19 @@ def decode_opcode(context: ExecutionContext):
 def is_valid_opcode(opcode: int) -> bool:
     return opcode in INSTRUCTIONS_BY_OPCODE
 
+def unsigned_to_signed(value: int) -> int:
+    if value <= 2**255 - 1:
+        return value
+    else:
+        return value - 2**256
+
+
+def signed_to_unsigned(value: int) -> int:
+    if value < 0:
+        return value + 2**256
+    else:
+        return value
+
 # from opcodes in opcode_values call add_instruction for each
 
 ADD = add_instruction(ADD, "ADD", lambda ctx: ctx.stack.push((ctx.stack.pop() + ctx.stack.pop()) & MAX_UINT256))
@@ -55,9 +69,34 @@ DIV = add_instruction(DIV, "DIV", div)
 LT = add_instruction(LT, "LT", lambda ctx: ctx.stack.push(1 if ctx.stack.pop() < ctx.stack.pop() else 0))
 GT = add_instruction(GT, "GT", lambda ctx: ctx.stack.push(1 if ctx.stack.pop() > ctx.stack.pop() else 0))
 EQ = add_instruction(EQ, "EQ", lambda ctx: ctx.stack.push(1 if ctx.stack.pop() == ctx.stack.pop() else 0))
+OR = add_instruction(OR, "OR", lambda ctx: ctx.stack.push(ctx.stack.pop() | ctx.stack.pop()))
+XOR = add_instruction(XOR, "XOR", lambda ctx: ctx.stack.push(ctx.stack.pop() ^ ctx.stack.pop()))
+NOT = add_instruction(NOT, "NOT", lambda ctx: ctx.stack.push(MAX_UINT256 - ctx.stack.pop()))
+AND = add_instruction(AND, "AND", lambda ctx: ctx.stack.push(ctx.stack.pop() & ctx.stack.pop()))
+ISZERO = add_instruction(ISZERO, "ISZERO", lambda ctx: ctx.stack.push(1 if ctx.stack.pop() == 0 else 0))
+def sdiv(ctx):
+    num, denom = map(unsigned_to_signed, (ctx.stack.pop(), ctx.stack.pop()))
+    sign = -1 if num * denom < 0 else 1
+    if denom == 0:
+        res = 0
+    else:
+        res = (sign * (abs(num) // abs(denom)))
+    ctx.stack.push(signed_to_unsigned(res))
+
+def slt(ctx):
+    l,r = map(unsigned_to_signed, (ctx.stack.pop(), ctx.stack.pop()))
+    ctx.stack.push(1 if l < r else 0)
+
+SLT = add_instruction(SLT, "SLT", slt)
+SDIV = add_instruction(SDIV, "SDIV", sdiv)
 
 PUSH1 = add_instruction(PUSH1, "PUSH1", lambda ctx: ctx.stack.push(ctx.read_code(1)))
 PUSH2 = add_instruction(PUSH2, "PUSH2", lambda ctx: ctx.stack.push(ctx.read_code(2)))
+PUSH3 = add_instruction(PUSH3, "PUSH3", lambda ctx: ctx.stack.push(ctx.read_code(3)))
+PUSH4 = add_instruction(PUSH4, "PUSH4", lambda ctx: ctx.stack.push(ctx.read_code(4)))
+PUSH5 = add_instruction(PUSH5, "PUSH5", lambda ctx: ctx.stack.push(ctx.read_code(5)))
+PUSH6 = add_instruction(PUSH6, "PUSH6", lambda ctx: ctx.stack.push(ctx.read_code(6)))
+PUSH18 = add_instruction(PUSH18, "PUSH18", lambda ctx: ctx.stack.push(ctx.read_code(18)))
 
 POP = add_instruction(POP, "POP", lambda ctx: ctx.stack.pop())
 STOP = add_instruction(STOP, "STOP", lambda ctx: ctx.stop())
@@ -98,9 +137,9 @@ def jumpi(ctx) -> None:
         ctx.pc = jdest
         nextdest = ctx.peek_code()
         if nextdest != 91:
-            raise Exception("Invalid jump destination")
+            raise Exception("Invalid jump destination", nextdest)
         if not is_valid_opcode(jdest):
-            raise Exception("Invalid jump instruction")
+            raise Exception("Invalid jump instruction", jdest)
 
 JUMPI = add_instruction(JUMPI, "JUMPI", jumpi)
 
@@ -132,3 +171,22 @@ SWAP5 = add_instruction(SWAP5, "SWAP5", lambda ctx: ctx.stack.swap(5))
 SWAP6 = add_instruction(SWAP6, "SWAP6", lambda ctx: ctx.stack.swap(6))
 SWAP7 = add_instruction(SWAP7, "SWAP7", lambda ctx: ctx.stack.swap(7))
 SWAP8 = add_instruction(SWAP8, "SWAP8", lambda ctx: ctx.stack.swap(8))
+
+def cdl(ctx):
+    offset = ctx.stack.pop()
+    val = ctx.message.data[offset:offset+32]
+    padded_val = val.ljust(32, b'\x00')
+    normalized_val = padded_val.lstrip(b'\x00')
+    ctx.stack.push_bytes(normalized_val)
+
+CALLDATALOAD = add_instruction(CALLDATALOAD, "CALLDATALOAD", cdl)
+CALLDATASIZE = add_instruction(CALLDATASIZE, "CALLDATASIZE", lambda ctx: ctx.stack.push(len(ctx.message.data)))
+
+def cdc(ctx):
+    (memory_offset, message_offset, size) = ctx.stack.pop(), ctx.stack.pop(), ctx.stack.pop()
+    ctx.memory.extend(memory_offset, size)
+    val = ctx.message.data[message_offset: message_offset + size]
+    padded_val = val.ljust(size, b'\x00')
+    ctx.memory.write(memory_offset, size, padded_val)
+
+CALLDATACOPY = add_instruction(CALLDATACOPY, "CALLDATACOPY", cdc )

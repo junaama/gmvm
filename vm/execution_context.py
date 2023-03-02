@@ -1,18 +1,21 @@
 from stack import Stack
 from storage import Storage
 from memory import Memory
+from message import Message
+from state import State
 from opcode_values import STOP
 class ExecutionContext:
 
-    def __init__(self, code=bytes(), pc=0, stack=Stack(), memory=Memory(), storage=Storage()):
+    def __init__(self, code=bytes(), pc=0, stack=Stack(), memory=Memory(), storage=Storage(), message=Message(), state=State()):
         self.code = code
         self.pc = pc
         self.stack = stack
         self.memory = memory
         self.storage = storage
-        self.state = {}
+        self.state = state
         self.stopped = False
         self.returndata = bytes()
+        self.message = message
 
     def stop(self):
         self.stopped = True
