@@ -45,6 +45,18 @@ Optimized for on-chain game development and handles executing gas calculations f
                                   +----------------+
                                   |    EVM Stack   |
                                   +----------------+
+
+```mermaid
+  graph TD;
+      User Code-->Opcode Parser-->Gas Estimator;
+      Gas Estimator-->Game State;
+      Gas Estimator-->Gas Scheduler;
+      Gas Estimator-->Incentives Engine;
+      Game State-->VM Stack;
+      Gas Scheduler-->VM Stack;
+      Incentives Engine-->VM Stack;
+
+```
 #### Incentives engine
 
 This component is responsible for incentivizing players to create balanced abilities. It uses the gas cost of executing an ability to determine the reward that the player will receive for creating the ability. This reward can be adjusted based on the power level and custom conditions of the ability, as well as the current state of the game.
