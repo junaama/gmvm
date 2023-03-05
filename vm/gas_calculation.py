@@ -1,12 +1,12 @@
 class GasCalculation:
     
     def __init__(self):
-        # stuff
+        pass
 
     def consume_gas(self, gas):
-        # stuff
+        pass
         
     def return_gas(self, gas):
-        # stuff
+        pass
 
     

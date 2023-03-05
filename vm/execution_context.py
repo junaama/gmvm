@@ -34,7 +34,3 @@ class ExecutionContext:
     def return_data(self, offset, size):
         self.stopped = True
         self.returndata = self.memory.read_range(offset=offset, size=size)
-
-
-
-

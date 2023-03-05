@@ -1,5 +1,5 @@
 class BatchManager:
-    def __init__(self, web3, contract_address, batch_size):
+    def __init__(self, web3, contract_address, batch_size, ABI):
         self.web3 = web3
         self.contract = self.web3.eth.contract(address=contract_address, abi=ABI)
         self.batch_size = batch_size
