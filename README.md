@@ -48,13 +48,13 @@ Optimized for on-chain game development and handles executing gas calculations f
 
 ```mermaid
   graph TD;
-      User Code-->Opcode Parser-->Gas Estimator;
-      Gas Estimator-->Game State;
-      Gas Estimator-->Gas Scheduler;
-      Gas Estimator-->Incentives Engine;
-      Game State-->VM Stack;
-      Gas Scheduler-->VM Stack;
-      Incentives Engine-->VM Stack;
+      UserCode-->OpcodeParser-->GasEstimator;
+      GasEstimator-->GameState;
+      GasEstimator-->GasScheduler;
+      GasEstimator-->IncentivesEngine;
+      GameState-->VMStack;
+      GasScheduler-->VMStack;
+      IncentivesEngine-->VMStack;
 
 ```
 #### Incentives engine
