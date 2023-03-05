@@ -2,7 +2,7 @@
 
 (Note: Due to time and health issues of team members, code was submitted incomplete and untested for ETHDenver submission)
 
-## With the GMVM I want to conceptualize a standardized game development ecosystem where game creators can build configurable game-optimized rollups that comes with an effective execution engine out the box.
+With the GMVM we want to conceptualize a standardized game development ecosystem where game creators can build configurable game-optimized rollups that comes with an effective execution engine out the box.
 
 ## Architecture
 
@@ -20,10 +20,9 @@ Optimized for on-chain game development and handles executing gas calculations f
 - Gas calculation
 - Incentives engine
 - Conditions evaluation
-- 
-#### Gas Calculation
 
-								  +----------------+
+#### Gas Calculation
+																	+----------------+
                                   |    User Code   |
                                   +----------------+
                                             |
@@ -46,8 +45,6 @@ Optimized for on-chain game development and handles executing gas calculations f
                                   +----------------+
                                   |    EVM Stack   |
                                   +----------------+
-
-
 #### Incentives engine
 
 This component is responsible for incentivizing players to create balanced abilities. It uses the gas cost of executing an ability to determine the reward that the player will receive for creating the ability. This reward can be adjusted based on the power level and custom conditions of the ability, as well as the current state of the game.
@@ -71,7 +68,6 @@ Spin up a game-chain to power a new game ecosystem that gets shared to the World
 - Sovereign chain governance address
 - Cross-chain executables
 - Abstracted gas/fee management
-- 
 
 ### Tooling 
 
