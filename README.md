@@ -22,29 +22,6 @@ Optimized for on-chain game development and handles executing gas calculations f
 - Conditions evaluation
 
 #### Gas Calculation
-																	+----------------+
-                                  |    User Code   |
-                                  +----------------+
-                                            |
-                                            v
-                                  +----------------+
-                                  |  Opcode Parser |
-                                  +----------------+
-                                            |
-                                            v
-                                  +----------------+
-                                  |  Gas Estimator |
-                                  +----------------+
-                                            |
-                                            v
-+---------------+          +----------------+          +----------------+
-|   Game State   | <----> |  Gas Scheduler | <----> | Incentives Engine |
-+---------------+          +----------------+          +-----------------+
-                                            |
-                                            v
-                                  +----------------+
-                                  |    EVM Stack   |
-                                  +----------------+
 
 ```mermaid
   graph TD;
